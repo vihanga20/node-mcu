@@ -1,0 +1,55 @@
+// Define sensor pins
+const int gasSensorPin = A0;  
+const int irSensorPin = 2;  
+const int redLedPin = 7;      
+const int greenLedPin = 6;   
+const int buzzerPin = 13;
+const int relay = 12;
+
+void setup() {
+  // Initialize sensor pins
+  pinMode(gasSensorPin, INPUT);
+  pinMode(irSensorPin, INPUT);
+  
+  // Initialize output pins
+  pinMode(redLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(relay, OUTPUT);
+
+  // Start with green LED indicating everything is normal
+  digitalWrite(greenLedPin, HIGH);
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(relay, LOW);
+
+
+  // Initialize Serial communication
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read sensor values
+  int gasValue = analogRead(gasSensorPin);
+  int irValue = digitalRead(irSensorPin);
+  
+  // Print gas value to Serial Monitor
+  Serial.print("Gas Value: ");
+  Serial.println(gasValue);
+
+  // Check for gas or fire
+  if (gasValue > 500 || irValue == LOW) {
+    // Gas or fire detected, turn on red LED and sound the buzzer
+    digitalWrite(redLedPin, HIGH);
+    digitalWrite(greenLedPin, LOW);
+    digitalWrite(relay, HIGH);
+    tone(buzzerPin, 1000);  // Sound the buzzer
+  } else {
+    // No gas or fire, turn off red LED and buzzer, turn on green LED
+    digitalWrite(redLedPin, LOW);
+    digitalWrite(greenLedPin, HIGH);
+    digitalWrite(relay, LOW);
+    noTone(buzzerPin);  // Turn off the buzzer
+  }
+  
+  delay(100);  // Delay for stability, adjust as needed
+}
